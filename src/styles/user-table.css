@@ -1,0 +1,88 @@
+.user-table-container
+{
+    width: 50vw;
+    margin: 2em auto;
+}
+
+.user-table
+{
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+}
+
+/* fancy table styling START*/
+.user-table thead tr
+{
+    color: #ffffff;
+    text-align: left;
+}
+
+.user-table th:not(:last-child)
+{
+    background-color: #009879;
+}
+
+.user-table th:first-child
+{
+    border-top-left-radius: 10px;
+}
+
+.user-table th:nth-last-child(2)
+{
+    border-top-right-radius: 10px;
+}
+
+.user-table th,
+.user-table td
+{
+    padding: 0.9em 1.2em;
+}
+
+.user-table tbody tr td:not(:last-child)
+{
+    border-bottom: 1px solid #dddddd;
+}
+
+.user-table tbody tr:nth-of-type(even) td:not(:last-child)
+{
+    background-color: #f3f3f3;
+}
+
+.user-table tbody tr:last-of-type td:not(:last-child)
+{
+    border-bottom: 2px solid #009879;
+}
+
+.user-table tbody tr.active-row
+{
+    font-weight: bold;
+    color: #009879;
+}
+/* fancy table styling END*/
+
+.user-table th
+{
+    white-space: nowrap;
+}
+
+.user-table th:not(.about, :last-child),
+.user-table td:not(.about, :last-child),
+.about div
+{
+    word-wrap: anywhere;
+}
+
+/* overflowing on 2-nd line*/
+.second-line-overflow
+{
+    display: -webkit-box;
+    max-width: 100%;
+    margin: 0 auto;
+    -webkit-line-clamp: 2;
+    /* autoprefixer: off */
+    -webkit-box-orient: vertical;
+    /* autoprefixer: on */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

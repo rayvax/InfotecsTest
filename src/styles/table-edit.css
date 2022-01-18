@@ -1,0 +1,11 @@
+td:last-child *
+{
+    margin-right: 0.75em;
+}
+
+td:last-child *:hover,
+.edit:hover
+{
+    text-decoration: underline;
+    cursor: pointer;
+}
