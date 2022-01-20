@@ -36,4 +36,7 @@ fetchMockData().then(data =>
     const userInputRow = new UserInputRow(inputs);
     table.makeEditable(userInputRow)
 
+    const hiderContainer = document.querySelector(".table-hider-container");
+    const hider = new TableColumnsHider(table)
+    hider.render(hiderContainer)
 })

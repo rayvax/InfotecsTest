@@ -942,7 +942,7 @@ var UserInputRow = /*#__PURE__*/function () {
   function UserInputRow(inputs) {
     _classCallCheck(this, UserInputRow);
 
-    var html = (0, _userTableTemplates.makeInputRow)(inputs);
+    var html = (0, _userTableTemplates.makeInputRow)(inputs, "edit-row");
     this.element = (0, _utils.toElementFromHtml)(html);
     var lastColumn = this.createInputActionsColumn();
     this.element.insertAdjacentElement("beforeend", lastColumn);

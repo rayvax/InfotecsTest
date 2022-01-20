@@ -10,7 +10,6 @@
     max-width: 100%;
     border-collapse: collapse;
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
-    border-radius: 10px 10px 0 0;
 }
 
 /* fancy table styling START*/
@@ -20,16 +19,6 @@
     color: #ffffff;
     text-align: left;
     border-radius: 10px 10px 0 0;
-}
-
-.user-table th:first-child
-{
-    border-top-left-radius: 10px;
-}
-
-.user-table th:last-child
-{
-    border-top-right-radius: 10px;
 }
 
 .user-table th,
@@ -53,11 +42,6 @@
     border-bottom: 2px solid #009879;
 }
 
-.user-table tbody tr.active-row
-{
-    font-weight: bold;
-    color: #009879;
-}
 /* fancy table styling END*/
 
 .user-table th

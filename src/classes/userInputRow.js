@@ -8,7 +8,7 @@ export default class UserInputRow
      */
     constructor(inputs)
     {
-        const html = makeInputRow(inputs)
+        const html = makeInputRow(inputs, "edit-row")
         this.element = toElementFromHtml(html)
 
         const lastColumn = this.createInputActionsColumn()
