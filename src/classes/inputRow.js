@@ -1,7 +1,7 @@
 import {makeInputRow}                                  from "../templates/user-table-templates";
 import {createElement, spanElement, toElementFromHtml} from "../utils/utils";
 
-export default class UserInputRow
+export default class InputRow
 {
     /**
      * @param {Input[]} inputs input fields in each column
@@ -11,7 +11,7 @@ export default class UserInputRow
         const html = makeInputRow(inputs, "edit-row")
         this.element = toElementFromHtml(html)
 
-        const lastColumn = this.createInputActionsColumn()
+        const lastColumn = createInputActionsColumn.call(this)
         this.element.insertAdjacentElement("beforeend", lastColumn)
 
         this.setEditMode(false)
@@ -34,6 +34,11 @@ export default class UserInputRow
         return this._editRow;
     }
 
+    /**
+     * Changes name of the input or textArea by name
+     * @param {string} name
+     * @param {string} value
+     */
     changeInputValues(name, value)
     {
         const input = this.element.querySelector(`[name=${name}]`)
@@ -42,6 +47,10 @@ export default class UserInputRow
             input.value = value;
     }
 
+    /**
+     * Shows or hides this element and editRow
+     * @param {boolean} value
+     */
     setEditMode(value)
     {
         this.element.style.display = value ? null : "none";
@@ -64,17 +73,10 @@ export default class UserInputRow
         return result;
     }
 
-    createInputActionsColumn()
-    {
-        const save = spanElement("Save")
-        const cancel = spanElement("Cancel")
-
-        save.onclick = () => this.saveEdit();
-        cancel.onclick = () => this.stopEdit();
-
-        return createElement("td", [save, cancel], "actions");
-    }
-
+    /**
+     * Replaces targetRow with input row
+     * @param {HTMLElement} targetRow
+     */
     startEdit(targetRow)
     {
         this.editRow = targetRow
@@ -117,4 +119,19 @@ export default class UserInputRow
         const column = this.element.querySelector(`td:nth-child(${colIndex + 1})`)
         column.style.display = show ? null : "none";
     }
+}
+
+/**
+ * Returns last column of InputRow with "Save" and "Cancel" in it
+ * @returns {HTMLElement}
+ */
+function createInputActionsColumn()
+{
+    const save = spanElement("Save")
+    const cancel = spanElement("Cancel")
+
+    save.onclick = () => this.saveEdit();
+    cancel.onclick = () => this.stopEdit();
+
+    return createElement("td", [save, cancel], "actions");
 }

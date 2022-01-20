@@ -1,22 +1,4 @@
-import {column, div, input, row, textArea} from "../utils/utils";
-
-/**
- * Creates html tr for the user
- * @param {User} user
- * @returns {string}
- */
-export function makeUserRow(user)
-{
-    let columns = [];
-    for (const key in user)
-    {
-        const d = div(user[key], "second-line-overflow")
-        columns.push(column(d, key))
-    }
-
-    return row(columns.join(""));
-}
-
+import {column, input, row, textArea} from "../utils/utils";
 
 const textInput = (name) => input("text", name)
 const inputWrappers = {textInput, textArea}

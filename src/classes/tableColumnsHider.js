@@ -1,10 +1,13 @@
-import {checkbox, div, toElementFromHtml} from "../utils/utils";
+import {checkbox, div, label, toElementFromHtml} from "../utils/utils";
 
 export default class TableColumnsHider
 {
     table;
     element;
 
+    /**
+     * @param {Table} table
+     */
     constructor(table)
     {
         this.table = table;
@@ -16,24 +19,33 @@ export default class TableColumnsHider
             input.onchange = (event) =>
             {
                 const colIndex = parseInt(event.target.name)
-                this.table.showColumn(colIndex, event.target.checked)
+                const show = event.target.checked
+                this.table.showColumn(colIndex, show)
             }
         })
     }
 
+    /**
+     * @param {HTMLElement} container
+     */
     render(container)
     {
         container.insertAdjacentElement("beforeend", this.element)
     }
 }
 
+/**
+ * Creates html for the TableColumnsHider class
+ * @param tableHeads
+ * @returns {HTMLElement}
+ */
 function createTableColumnsHiderElement(tableHeads)
 {
     let checkboxes = []
     tableHeads.forEach((head, index) =>
     {
         const hiderHtml = checkbox(`${index}`, true) + head.textContent
-        checkboxes.push(div(hiderHtml, "column-hider"))
+        checkboxes.push(label(hiderHtml, "column-hider"))
     })
 
     const html = div(checkboxes.join(""))

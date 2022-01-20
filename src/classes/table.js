@@ -7,11 +7,15 @@ const descendingClassName = "sort-desc";
 export default class Table
 {
     element;
-    userInputRow;
+    inputRow;
 
-    constructor(thNames, rowData, rowTemplate = row)
+    /**
+     * @param {string[]} thNames names of the table headers
+     * @param {RowData[]} rowDatas data for table rows
+     */
+    constructor(thNames, rowDatas)
     {
-        const html = makeTable(thNames, rowData, rowTemplate);
+        const html = makeTable(thNames, rowDatas);
         this.element = toElementFromHtml(html)
     }
 
@@ -102,11 +106,11 @@ export default class Table
 
     /**
      * Adds column to the end of the table to edit each row.
-     * @param {UserInputRow} userInputRow
+     * @param {InputRow} inputRow
      */
-    makeEditable(userInputRow)
+    makeEditable(inputRow)
     {
-        this.userInputRow = userInputRow;
+        this.inputRow = inputRow;
 
         const actionsHeading = tableHead("Actions", "actions")
         const editColumn = column(span("Edit", "edit"), "actions")
@@ -126,18 +130,18 @@ export default class Table
             .forEach(edit =>
             {
                 const editCell = edit.parentElement
-                edit.onclick = () => userInputRow.startEdit(editCell.parentElement)
+                edit.onclick = () => inputRow.startEdit(editCell.parentElement)
             })
     }
 
     /**
      * Shows or hides a column
      * @param {number} colIndex
-     * @param {boolean} show
+     * @param {boolean} show true - show, false - hide
      */
     showColumn(colIndex, show = true)
     {
-        const columnSelector = `thead th:nth-child(${colIndex + 1}), tbody td:nth-child(${colIndex + 1})`
+        const columnSelector = getColumnSelector(colIndex)
         const columnRows = this.element.querySelectorAll(columnSelector);
 
         const displayValue = show ? null : "none";
@@ -145,7 +149,12 @@ export default class Table
             row.style.display = displayValue
         })
 
-        if(this.userInputRow)
-            this.userInputRow.showColumn(colIndex, show)
+        if(this.inputRow)
+            this.inputRow.showColumn(colIndex, show)
     }
+}
+
+function getColumnSelector(columnIndex)
+{
+    return `thead th:nth-child(${columnIndex + 1}), tbody td:nth-child(${columnIndex + 1})`
 }
