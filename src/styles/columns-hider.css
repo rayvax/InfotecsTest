@@ -1,0 +1,27 @@
+.table-hider-container
+{
+    width: fit-content;
+    margin: 0 auto;
+    padding: 1.5em 3em;
+    text-align: center;
+
+
+    border: 2px dashed #009879;
+    border-radius: 10px;
+}
+
+.table-hider-container h2
+{
+    margin: 0 0 0.5em;
+}
+
+.column-hider
+{
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+.table-hider-container input[type="checkbox"]
+{
+    margin-right: 0.5em;
+}

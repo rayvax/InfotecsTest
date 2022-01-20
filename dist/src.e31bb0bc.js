@@ -204,6 +204,11 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"styles/columns-hider.css":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"mock_data.js":[function(require,module,exports) {
 "use strict";
 
@@ -556,7 +561,7 @@ var data = [{
 }, {
   "id": "5c2286fb1802a0ecd0aa6873",
   "name": {
-    "firstName": "Mccullough",
+    "firstName": "Mcculloug",
     "lastName": "Sullivan"
   },
   "phone": "+7 (953) 553-3215",
@@ -670,15 +675,17 @@ function fetchMockData() {
 }
 
 ;
-},{}],"templates/templates.js":[function(require,module,exports) {
+},{}],"utils/utils.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.checkbox = checkbox;
 exports.column = column;
 exports.createElement = createElement;
 exports.div = div;
+exports.header = header;
 exports.input = input;
 exports.makeTable = makeTable;
 exports.row = row;
@@ -686,7 +693,18 @@ exports.span = span;
 exports.spanElement = spanElement;
 exports.tableHead = tableHead;
 exports.textArea = textArea;
+exports.toElementFromHtml = toElementFromHtml;
 
+/**
+ * Converts html string to DOM element
+ * @param {string} html
+ * @returns {HTMLElement}
+ */
+function toElementFromHtml(html) {
+  var container = document.createElement("template");
+  container.insertAdjacentHTML("beforeend", html);
+  return container.children[0];
+}
 /**
  * Returns HTMLElement matching tagName
  * @param {string} tagName
@@ -694,24 +712,34 @@ exports.textArea = textArea;
  * @param {string} className
  * @returns {HTMLElement}
  */
+
+
 function createElement(tagName, contents) {
   var className = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
   var result = document.createElement(tagName);
   contents.forEach(function (content) {
     return result.insertAdjacentElement("beforeend", content);
   });
-  result.className = "";
+  result.className = className;
   return result;
+}
+
+function pairTag(tagName, content) {
+  var className = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+  var htmlClass = className === "" ? "" : "class=\"".concat(className, "\"");
+  return "<".concat(tagName, " ").concat(htmlClass, ">").concat(content, "</").concat(tagName, ">");
 }
 /**
  * tr wrapper
  * @param content
+ * @param className
  * @returns {string}
  */
 
 
 function row(content) {
-  return "<tr>".concat(content, "</tr>");
+  var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+  return pairTag("tr", content, className);
 }
 /**
  * td wrapper
@@ -723,7 +751,7 @@ function row(content) {
 
 function column(content) {
   var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
-  return "<td class=".concat(className, ">").concat(content, "</td>");
+  return pairTag("td", content, className);
 }
 /**
  * div wrapper
@@ -735,7 +763,7 @@ function column(content) {
 
 function div(content) {
   var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
-  return "<div class=".concat(className, ">").concat(content, "</div>");
+  return pairTag("div", content, className);
 }
 /**
  * th wrapper
@@ -747,24 +775,24 @@ function div(content) {
 
 function tableHead(content) {
   var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
-  return "<th class=".concat(className, ">").concat(content, "</th>");
+  return pairTag("th", content, className);
 }
 
 function input(type, name) {
   var initialValue = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-  return "<input type=".concat(type, " name=").concat(name, " value=").concat(initialValue, " />");
+  return "<input type=\"".concat(type, "\" name=\"").concat(name, "\" value=").concat(initialValue, " />");
 }
 
 function textArea(name) {
   var initialValue = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
   var rows = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 10;
   var cols = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 30;
-  return "<textarea name=".concat(name, " id=\"\" cols=").concat(cols, " rows=").concat(rows, ">").concat(initialValue, "</textarea>");
+  return "<textarea name=\"".concat(name, "\" cols=").concat(cols, " rows=").concat(rows, ">").concat(initialValue, "</textarea>");
 }
 
 function span(content) {
   var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
-  return "<span class=".concat(className, ">").concat(content, "</span>");
+  return pairTag("span", content, className);
 }
 
 function spanElement(content) {
@@ -776,22 +804,38 @@ function spanElement(content) {
 }
 /**
  * return an HTML table
- * @param {Array} theads contains th contents
- * @param {Array} rows contains tr contents
+ * @param {Array} theadNames contains th contents
+ * @param {Array} rowData contains tr contents
  * @param {function} rowTempalate a wrapper for the tr's in the table
  * @param {string} className class name of the table
  * @returns {string}
  */
 
 
-function makeTable(theads, rows) {
+function makeTable(theadNames, rowData) {
   var rowTempalate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : row;
   var className = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "";
-  var tableHead = theads.join("");
-  var tableBody = rows.reduce(function (result, content) {
-    return result + rowTempalate(content);
-  }, "");
-  return "\n    <table class=".concat(className, ">\n        <thead>\n        ").concat(tableHead, "\n        </thead>\n        <tbody>\n        ").concat(tableBody, "\n        </tbody>\n    </table>\n    ");
+
+  var reduceToHtml = function reduceToHtml(template) {
+    return function (result, content) {
+      return result + template(content);
+    };
+  };
+
+  var theadContent = theadNames.reduce(reduceToHtml(tableHead), "");
+  var tableBodyContent = rowData.reduce(reduceToHtml(rowTempalate), "");
+  return "\n    <table class=".concat(className, ">\n        <thead>\n        ").concat(theadContent, "\n        </thead>\n        <tbody>\n        ").concat(tableBodyContent, "\n        </tbody>\n    </table>\n    ");
+}
+
+function checkbox(name) {
+  var checked = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var checkedStatus = checked ? "checked" : "";
+  return "<input type=\"checkbox\" name=\"".concat(name, "\" ").concat(checkedStatus, " />");
+}
+
+function header(level, content) {
+  var className = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+  return pairTag("h".concat(level), content, className);
 }
 },{}],"templates/user-table-templates.js":[function(require,module,exports) {
 "use strict";
@@ -799,46 +843,251 @@ function makeTable(theads, rows) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.makeUserInputRowElement = makeUserInputRowElement;
+exports.Input = void 0;
+exports.makeInputRow = makeInputRow;
 exports.makeUserRow = makeUserRow;
 
-var _templates = require("./templates");
+var _utils = require("../utils/utils");
 
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * Creates html tr for the user
+ * @param {User} user
+ * @returns {string}
+ */
 function makeUserRow(user) {
-  var rowData = {
-    firstName: user.name.firstName,
-    lastName: user.name.lastName,
-    about: user.about,
-    eyeColor: user.eyeColor
-  };
   var columns = [];
 
-  for (var key in rowData) {
-    var d = (0, _templates.div)(rowData[key], "second-line-overflow");
-    columns.push((0, _templates.column)(d, key));
+  for (var key in user) {
+    var d = (0, _utils.div)(user[key], "second-line-overflow");
+    columns.push((0, _utils.column)(d, key));
   }
 
-  columns.push((0, _templates.column)("Edit", "edit"));
-  return (0, _templates.row)(columns.join(""));
+  return (0, _utils.row)(columns.join(""));
 }
 
-function makeUserInputRowElement() {
-  var inputs = [(0, _templates.input)("text", "firstName"), (0, _templates.input)("text", "lastName"), (0, _templates.textArea)("about"), (0, _templates.input)("text", "eyeColor")];
-  var columns = Array.from(inputs, function (input) {
-    return (0, _templates.column)(input);
+var textInput = function textInput(name) {
+  return (0, _utils.input)("text", name);
+};
+
+var inputWrappers = {
+  textInput: textInput,
+  textArea: _utils.textArea
+};
+/* Wrapper for proper abstraction for the makeInputRow method */
+
+var Input = /*#__PURE__*/_createClass(
+/** Should match inputWrappers keys
+ * @typedef {"textInput" | "textArea"} InputTypes
+ */
+
+/**
+ * @param {InputTypes} type
+ * @param {string} name
+ */
+function Input(type, name) {
+  _classCallCheck(this, Input);
+
+  this.type = type;
+  this.name = name;
+});
+/**
+ * @param {Input[]} inputs input fields in each column
+ * @param {string} className
+ * @returns string
+ */
+
+
+exports.Input = Input;
+
+function makeInputRow(inputs) {
+  var className = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+  var columns = inputs.map(function (input) {
+    var toHtml = inputWrappers[input.type];
+
+    if (toHtml) {
+      var inputHtml = toHtml(input.name);
+      return (0, _utils.column)(inputHtml);
+    }
   });
-  var result = document.createElement("tr");
-  result.insertAdjacentHTML("beforeend", columns.join(""));
-  return result;
+  return (0, _utils.row)(columns.join(""), className);
 }
-},{"./templates":"templates/templates.js"}],"utils/table-utils.js":[function(require,module,exports) {
+},{"../utils/utils":"utils/utils.js"}],"classes/userInputRow.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.makeSortable = makeSortable;
-exports.sortTableByColumn = sortTableByColumn;
+exports.default = void 0;
+
+var _userTableTemplates = require("../templates/user-table-templates");
+
+var _utils = require("../utils/utils");
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var UserInputRow = /*#__PURE__*/function () {
+  /**
+   * @param {Input[]} inputs input fields in each column
+   */
+  function UserInputRow(inputs) {
+    _classCallCheck(this, UserInputRow);
+
+    var html = (0, _userTableTemplates.makeInputRow)(inputs);
+    this.element = (0, _utils.toElementFromHtml)(html);
+    var lastColumn = this.createInputActionsColumn();
+    this.element.insertAdjacentElement("beforeend", lastColumn);
+    this.setEditMode(false);
+    document.body.insertAdjacentElement("beforeend", this.element);
+  }
+  /**
+   * @param {HTMLElement} value
+   */
+
+
+  _createClass(UserInputRow, [{
+    key: "editRow",
+    get: function get() {
+      return this._editRow;
+    },
+    set: function set(value) {
+      if (this._editRow) this._editRow.style.display = null;
+      this._editRow = value;
+    }
+  }, {
+    key: "changeInputValues",
+    value: function changeInputValues(name, value) {
+      var input = this.element.querySelector("[name=".concat(name, "]"));
+      if (input) input.value = value;
+    }
+  }, {
+    key: "setEditMode",
+    value: function setEditMode(value) {
+      this.element.style.display = value ? null : "none";
+
+      if (this._editRow) {
+        this._editRow.style.display = value ? "none" : null;
+      }
+    }
+  }, {
+    key: "getValues",
+    value: function getValues() {
+      var result = {};
+      var inputs = this.element.querySelectorAll("[name]");
+      inputs.forEach(function (input) {
+        result[input.name] = input.value;
+      });
+      return result;
+    }
+  }, {
+    key: "createInputActionsColumn",
+    value: function createInputActionsColumn() {
+      var _this = this;
+
+      var save = (0, _utils.spanElement)("Save");
+      var cancel = (0, _utils.spanElement)("Cancel");
+
+      save.onclick = function () {
+        return _this.saveEdit();
+      };
+
+      cancel.onclick = function () {
+        return _this.stopEdit();
+      };
+
+      return (0, _utils.createElement)("td", [save, cancel], "actions");
+    }
+  }, {
+    key: "startEdit",
+    value: function startEdit(targetRow) {
+      var _this2 = this;
+
+      this.editRow = targetRow;
+      this.setEditMode(true);
+      this.editRow.querySelectorAll("td:not(:last-child)").forEach(function (td) {
+        _this2.changeInputValues(td.className, td.textContent);
+      });
+      this.editRow.insertAdjacentElement("afterend", this.element);
+    }
+  }, {
+    key: "saveEdit",
+    value: function saveEdit() {
+      var fields = this.getValues();
+
+      for (var key in fields) {
+        var htmlField = this.editRow.querySelector(".".concat(key, " div"));
+        htmlField.textContent = fields[key];
+      }
+
+      this.stopEdit();
+    }
+  }, {
+    key: "stopEdit",
+    value: function stopEdit() {
+      this.setEditMode(false);
+      this.editRow = null;
+    }
+    /**
+     * Shows or hides a column
+     * @param {number} colIndex
+     * @param {boolean} show
+     */
+
+  }, {
+    key: "showColumn",
+    value: function showColumn(colIndex) {
+      var show = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      var column = this.element.querySelector("td:nth-child(".concat(colIndex + 1, ")"));
+      column.style.display = show ? null : "none";
+    }
+  }]);
+
+  return UserInputRow;
+}();
+
+exports.default = UserInputRow;
+},{"../templates/user-table-templates":"templates/user-table-templates.js","../utils/utils":"utils/utils.js"}],"classes/user.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var User = /*#__PURE__*/_createClass(function User(firstName, lastName, about, eyeColor) {
+  _classCallCheck(this, User);
+
+  this.firstName = firstName;
+  this.lastName = lastName;
+  this.about = about;
+  this.eyeColor = eyeColor;
+});
+
+exports.default = User;
+},{}],"classes/table.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _utils = require("../utils/utils");
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -852,138 +1101,230 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var sortableThClassName = "sortable";
 var ascendingClassName = "sort-asc";
 var descendingClassName = "sort-desc";
-/**
- *
- * @param {HTMLTableElement} table
- * @param {number} colIndex The index of the column to sort
- * @param {boolean} ascending Whether to sort a table in ascending order
- */
 
-function sortTableByColumn(table, colIndex) {
-  var ascending = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-  var directionModifier = ascending ? 1 : -1;
-  var tbody = table.tBodies[0];
-  var rows = Array.from(tbody.querySelectorAll("tr")); //sort rows
+var Table = /*#__PURE__*/function () {
+  function Table(thNames, rowData) {
+    var rowTemplate = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : _utils.row;
 
-  var sortedRows = rows.sort(function (a, b) {
-    var aColText = a.querySelector("td:nth-child(".concat(colIndex + 1, ")")).textContent.trim();
-    var bColText = b.querySelector("td:nth-child(".concat(colIndex + 1, ")")).textContent.trim();
-    return aColText > bColText ? 1 * directionModifier : -1 * directionModifier;
-  }); //remove previous rows
+    _classCallCheck(this, Table);
 
-  while (tbody.firstChild) {
-    tbody.removeChild(tbody.firstChild);
-  } //add sorted rows
+    _defineProperty(this, "element", void 0);
+
+    _defineProperty(this, "userInputRow", void 0);
+
+    var html = (0, _utils.makeTable)(thNames, rowData, rowTemplate);
+    this.element = (0, _utils.toElementFromHtml)(html);
+  }
+  /**
+   * Return table th's
+   * @returns {NodeListOf<HTMLElement>}
+   */
 
 
-  tbody.append.apply(tbody, _toConsumableArray(sortedRows)); //remove previous order classes
+  _createClass(Table, [{
+    key: "heads",
+    get: function get() {
+      return this.element.querySelectorAll("th");
+    }
+    /**
+     * Puts table into html as a container child
+     * @param {HTMLElement} container
+     */
 
-  table.querySelectorAll("th").forEach(function (th) {
-    return th.classList.remove(ascendingClassName, descendingClassName);
-  }); //mark as ordered
+  }, {
+    key: "render",
+    value: function render(container) {
+      container.insertAdjacentElement("beforeend", this.element);
+    }
+    /**
+     * @param {string} name
+     */
 
-  var sortClass = ascending ? ascendingClassName : descendingClassName;
-  table.querySelector("th:nth-child(".concat(colIndex + 1, ")")).classList.add(sortClass);
-}
-/**
- * adds all sorting functionality
- * @param {HTMLTableElement} table
- */
+  }, {
+    key: "addClass",
+    value: function addClass(name) {
+      this.element.classList.add(name);
+    }
+    /**
+     * Makes some columns sortable
+     * @param {string} thSelector selector for the columns which would become sortable
+     */
+
+  }, {
+    key: "makeSortable",
+    value: function makeSortable(thSelector) {
+      var _this = this;
+
+      this.element.classList.add("table-sortable");
+      var tableHeads = Array.prototype.slice.call(this.element.querySelectorAll(thSelector));
+      tableHeads.forEach(function (th) {
+        th.classList.add(sortableThClassName);
+
+        th.onclick = function () {
+          var columnIndex = tableHeads.indexOf(th);
+          var currentIsAscending = th.classList.contains("sort-asc");
+
+          _this.sortByColumn(columnIndex, !currentIsAscending);
+        };
+      });
+    }
+    /**
+     * Sorts table column
+     * @param {number} colIndex The index of the column to sort
+     * @param {boolean} ascending Whether to sort a table in ascending order
+     */
+
+  }, {
+    key: "sortByColumn",
+    value: function sortByColumn(colIndex) {
+      var ascending = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      var directionModifier = ascending ? 1 : -1;
+      var tbody = this.element.tBodies[0];
+      var rows = Array.from(tbody.querySelectorAll("tr")); //sort rows
+
+      var sortedRows = rows.sort(function (a, b) {
+        var aColText = a.querySelector("td:nth-child(".concat(colIndex + 1, ")")).textContent.trim();
+        var bColText = b.querySelector("td:nth-child(".concat(colIndex + 1, ")")).textContent.trim();
+        return aColText > bColText ? 1 * directionModifier : -1 * directionModifier;
+      }); //remove previous rows
+
+      while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+      } //add sorted rows
 
 
-function makeSortable(table) {
-  table.classList.add("table-sortable");
-  var tableHeads = Array.prototype.slice.call(table.querySelectorAll("th"));
-  tableHeads.forEach(function (th) {
-    th.onclick = function () {
-      var columnIndex = tableHeads.indexOf(th);
-      var currentIsAscending = th.classList.contains("sort-asc");
-      sortTableByColumn(table, columnIndex, !currentIsAscending);
-    };
-  });
-}
-},{}],"table_edit.js":[function(require,module,exports) {
+      tbody.append.apply(tbody, _toConsumableArray(sortedRows)); //remove previous order classes
+
+      this.element.querySelectorAll("th").forEach(function (th) {
+        return th.classList.remove(ascendingClassName, descendingClassName);
+      }); //mark as ordered
+
+      var sortClass = ascending ? ascendingClassName : descendingClassName;
+      this.element.querySelector("th:nth-child(".concat(colIndex + 1, ")")).classList.add(sortClass);
+    }
+    /**
+     * Adds column to the end of the table to edit each row.
+     * @param {UserInputRow} userInputRow
+     */
+
+  }, {
+    key: "makeEditable",
+    value: function makeEditable(userInputRow) {
+      this.userInputRow = userInputRow;
+      var actionsHeading = (0, _utils.tableHead)("Actions", "actions");
+      var editColumn = (0, _utils.column)((0, _utils.span)("Edit", "edit"), "actions");
+      var headRow = this.element.querySelector("thead tr");
+      var bodyRows = this.element.querySelectorAll("tbody tr"); //add edit column
+
+      headRow.insertAdjacentHTML("beforeend", actionsHeading);
+      bodyRows.forEach(function (row) {
+        row.insertAdjacentHTML("beforeend", editColumn);
+      }); //add onclick events
+
+      this.element.querySelectorAll(".edit").forEach(function (edit) {
+        var editCell = edit.parentElement;
+
+        edit.onclick = function () {
+          return userInputRow.startEdit(editCell.parentElement);
+        };
+      });
+    }
+    /**
+     * Shows or hides a column
+     * @param {number} colIndex
+     * @param {boolean} show
+     */
+
+  }, {
+    key: "showColumn",
+    value: function showColumn(colIndex) {
+      var show = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      var columnSelector = "thead th:nth-child(".concat(colIndex + 1, "), tbody td:nth-child(").concat(colIndex + 1, ")");
+      var columnRows = this.element.querySelectorAll(columnSelector);
+      var displayValue = show ? null : "none";
+      columnRows.forEach(function (row) {
+        row.style.display = displayValue;
+      });
+      if (this.userInputRow) this.userInputRow.showColumn(colIndex, show);
+    }
+  }]);
+
+  return Table;
+}();
+
+exports.default = Table;
+},{"../utils/utils":"utils/utils.js"}],"classes/tableColumnsHider.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.startRowEdit = startRowEdit;
+exports.default = void 0;
 
-var _userTableTemplates = require("./templates/user-table-templates");
+var _utils = require("../utils/utils");
 
-var _templates = require("./templates/templates");
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var userInputRow = {
-  htmlRow: undefined,
-  changeInputValues: function changeInputValues(name, value) {
-    var input = document.querySelector("[name=".concat(name, "]"));
-    if (input) input.value = value;
-  },
-  initHtmlRow: function initHtmlRow() {
-    this.htmlRow = (0, _userTableTemplates.makeUserInputRowElement)();
-    var lastColumn = createInputActionsColumn();
-    this.htmlRow.insertAdjacentElement("beforeend", lastColumn);
-    this.isHtmlHidden(true);
-    document.body.insertAdjacentElement("beforeend", this.htmlRow);
-  },
-  isHtmlHidden: function isHtmlHidden(hidden) {
-    this.htmlRow.style.display = hidden ? "none" : null;
-  },
-  getValues: function getValues() {
-    var result = {};
-    var inputs = this.htmlRow.querySelectorAll("[name]");
-    inputs.forEach(function (input) {
-      result[input.name] = input.value;
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var TableColumnsHider = /*#__PURE__*/function () {
+  function TableColumnsHider(table) {
+    var _this = this;
+
+    _classCallCheck(this, TableColumnsHider);
+
+    _defineProperty(this, "table", void 0);
+
+    _defineProperty(this, "element", void 0);
+
+    this.table = table;
+    this.element = createTableColumnsHiderElement(this.table.heads);
+    this.element.querySelectorAll("input").forEach(function (input) {
+      input.onchange = function (event) {
+        var colIndex = parseInt(event.target.name);
+
+        _this.table.showColumn(colIndex, event.target.checked);
+      };
     });
-    return result;
-  }
-};
-userInputRow.initHtmlRow();
-var editRow;
-
-function startRowEdit(targetRow) {
-  if (editRow) {
-    editRow.style.display = null;
   }
 
-  editRow = targetRow;
-  targetRow.style.display = "none";
-  var columns = targetRow.querySelectorAll("td:not(:last-child)");
-  columns.forEach(function (td) {
-    userInputRow.changeInputValues(td.className, td.textContent);
+  _createClass(TableColumnsHider, [{
+    key: "render",
+    value: function render(container) {
+      container.insertAdjacentElement("beforeend", this.element);
+    }
+  }]);
+
+  return TableColumnsHider;
+}();
+
+exports.default = TableColumnsHider;
+
+function createTableColumnsHiderElement(tableHeads) {
+  var checkboxes = [];
+  tableHeads.forEach(function (head, index) {
+    var hiderHtml = (0, _utils.checkbox)("".concat(index), true) + head.textContent;
+    checkboxes.push((0, _utils.div)(hiderHtml, "column-hider"));
   });
-  userInputRow.isHtmlHidden(false);
-  targetRow.insertAdjacentElement("afterend", userInputRow.htmlRow);
+  var html = (0, _utils.div)(checkboxes.join(""));
+  return (0, _utils.toElementFromHtml)(html);
 }
-
-function createInputActionsColumn() {
-  var save = (0, _templates.spanElement)("Save");
-  var cancel = (0, _templates.spanElement)("Cancel");
-  save.onclick = saveEdit;
-  cancel.onclick = stopEdit;
-  return (0, _templates.createElement)("td", [save, cancel]);
-}
-
-function saveEdit() {
-  var fields = userInputRow.getValues();
-
-  for (var key in fields) {
-    var htmlField = editRow.querySelector(".".concat(key, " div"));
-    htmlField.textContent = fields[key];
-  }
-
-  stopEdit();
-}
-
-function stopEdit() {
-  editRow.style.display = null;
-  editRow = null;
-  userInputRow.isHtmlHidden(true);
-}
-},{"./templates/user-table-templates":"templates/user-table-templates.js","./templates/templates":"templates/templates.js"}],"index.js":[function(require,module,exports) {
+},{"../utils/utils":"utils/utils.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 require("./styles/main.css");
@@ -994,36 +1335,43 @@ require("./styles/table-sort.css");
 
 require("./styles/table-edit.css");
 
+require("./styles/columns-hider.css");
+
 var _mock_data = _interopRequireDefault(require("./mock_data"));
 
 var _userTableTemplates = require("./templates/user-table-templates");
 
-var _tableUtils = require("./utils/table-utils");
+var _userInputRow = _interopRequireDefault(require("./classes/userInputRow"));
 
-var _templates = require("./templates/templates");
+var _user = _interopRequireDefault(require("./classes/user"));
 
-var _table_edit = require("./table_edit");
+var _table = _interopRequireDefault(require("./classes/table"));
+
+var _tableColumnsHider = _interopRequireDefault(require("./classes/tableColumnsHider"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var tableHeadNames = ["First Name", "Last Name", "About", "Eye Color", ""];
-(0, _mock_data.default)().then(function (users) {
-  var container = document.querySelector(".user-table-container");
-  var tableHeads = Array.from(tableHeadNames, function (name) {
-    return (0, _templates.tableHead)(name);
+var thNames = ["First Name", "Last Name", "About", "Eye Color"];
+var inputs = [new _userTableTemplates.Input("textInput", "firstName"), new _userTableTemplates.Input("textInput", "lastName"), new _userTableTemplates.Input("textArea", "about"), new _userTableTemplates.Input("textInput", "eyeColor")];
+(0, _mock_data.default)().then(function (data) {
+  return data.map(function (field) {
+    return new _user.default(field.name.firstName, field.name.lastName, field.about, field.eyeColor);
   });
-  container.insertAdjacentHTML("beforeend", (0, _templates.makeTable)(tableHeads, users, _userTableTemplates.makeUserRow, "user-table"));
-  var table = document.querySelector(".user-table"); //sorting functionality
+}).then(function (users) {
+  var tableContainer = document.querySelector(".user-table-container");
+  var table = new _table.default(thNames, users, _userTableTemplates.makeUserRow);
+  table.addClass("user-table");
+  table.render(tableContainer); //sorting functionality
 
-  (0, _tableUtils.makeSortable)(table);
-  var edits = table.querySelectorAll(".edit");
-  edits.forEach(function (edit) {
-    edit.onclick = function () {
-      return (0, _table_edit.startRowEdit)(edit.parentElement);
-    };
-  });
+  table.makeSortable("th"); //editing functionality
+
+  var userInputRow = new _userInputRow.default(inputs);
+  table.makeEditable(userInputRow);
+  var hiderContainer = document.querySelector(".table-hider-container");
+  var hider = new _tableColumnsHider.default(table);
+  hider.render(hiderContainer);
 });
-},{"./styles/main.css":"styles/main.css","./styles/user-table.css":"styles/user-table.css","./styles/table-sort.css":"styles/table-sort.css","./styles/table-edit.css":"styles/table-edit.css","./mock_data":"mock_data.js","./templates/user-table-templates":"templates/user-table-templates.js","./utils/table-utils":"utils/table-utils.js","./templates/templates":"templates/templates.js","./table_edit":"table_edit.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./styles/main.css":"styles/main.css","./styles/user-table.css":"styles/user-table.css","./styles/table-sort.css":"styles/table-sort.css","./styles/table-edit.css":"styles/table-edit.css","./styles/columns-hider.css":"styles/columns-hider.css","./mock_data":"mock_data.js","./templates/user-table-templates":"templates/user-table-templates.js","./classes/userInputRow":"classes/userInputRow.js","./classes/user":"classes/user.js","./classes/table":"classes/table.js","./classes/tableColumnsHider":"classes/tableColumnsHider.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1051,7 +1399,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60294" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59286" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

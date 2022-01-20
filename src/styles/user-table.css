@@ -9,18 +9,17 @@
     width: 100%;
     max-width: 100%;
     border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .15);
+    border-radius: 10px 10px 0 0;
 }
 
 /* fancy table styling START*/
 .user-table thead tr
 {
+    background-color: #009879;
     color: #ffffff;
     text-align: left;
-}
-
-.user-table th:not(:last-child)
-{
-    background-color: #009879;
+    border-radius: 10px 10px 0 0;
 }
 
 .user-table th:first-child
@@ -28,7 +27,7 @@
     border-top-left-radius: 10px;
 }
 
-.user-table th:nth-last-child(2)
+.user-table th:last-child
 {
     border-top-right-radius: 10px;
 }
@@ -39,17 +38,17 @@
     padding: 0.9em 1.2em;
 }
 
-.user-table tbody tr td:not(:last-child)
+.user-table tbody tr
 {
     border-bottom: 1px solid #dddddd;
 }
 
-.user-table tbody tr:nth-of-type(even) td:not(:last-child)
+.user-table tbody tr:nth-of-type(even)
 {
     background-color: #f3f3f3;
 }
 
-.user-table tbody tr:last-of-type td:not(:last-child)
+.user-table tbody tr:last-of-type
 {
     border-bottom: 2px solid #009879;
 }

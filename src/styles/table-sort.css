@@ -1,4 +1,4 @@
-.table-sortable th
+.table-sortable th.sortable
 {
     cursor: pointer;
 }

@@ -2,28 +2,38 @@ import "./styles/main.css"
 import "./styles/user-table.css"
 import "./styles/table-sort.css"
 import "./styles/table-edit.css"
-import fetchMockData                                        from "./mock_data";
-import { makeUserRow}                                       from "./templates/user-table-templates";
-import {makeSortable}                                       from "./utils/table-utils";
-import {tableHead, makeTable, input, textArea, column, row} from "./templates/templates";
-import {startRowEdit}                                       from "./table_edit";
+import "./styles/columns-hider.css"
+import fetchMockData                      from "./mock_data";
+import {Input, makeUserRow} from "./templates/user-table-templates";
+import UserInputRow                       from "./classes/userInputRow";
+import User                               from "./classes/user";
+import Table                 from "./classes/table";
+import TableColumnsHider     from "./classes/tableColumnsHider";
 
-const tableHeadNames = ["First Name", "Last Name", "About", "Eye Color", ""]
+const thNames = ["First Name", "Last Name", "About", "Eye Color"]
+const inputs = [
+    new Input("textInput", "firstName"),
+    new Input("textInput", "lastName"),
+    new Input("textArea", "about"),
+    new Input("textInput", "eyeColor")]
 
-fetchMockData().then(users =>
+fetchMockData().then(data =>
 {
-    const container = document.querySelector(".user-table-container");
-    const tableHeads = Array.from(tableHeadNames, name => tableHead(name))
-    container.insertAdjacentHTML("beforeend", makeTable(tableHeads, users, makeUserRow, "user-table"));
+    return data.map(field => new User(field.name.firstName, field.name.lastName, field.about, field.eyeColor))
+})
+    .then(users =>
+{
+    const tableContainer = document.querySelector(".user-table-container");
 
-    const table = document.querySelector(".user-table");
+    const table = new Table(thNames, users, makeUserRow)
+    table.addClass("user-table")
+    table.render(tableContainer)
 
     //sorting functionality
-    makeSortable(table);
+    table.makeSortable("th")
 
-    const edits = table.querySelectorAll(".edit");
-    edits.forEach(edit =>
-    {
-        edit.onclick = () => startRowEdit(edit.parentElement)
-    })
+    //editing functionality
+    const userInputRow = new UserInputRow(inputs);
+    table.makeEditable(userInputRow)
+
 })

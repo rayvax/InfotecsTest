@@ -1,11 +1,33 @@
-td:last-child *
+.actions *
 {
     margin-right: 0.75em;
 }
 
-td:last-child *:hover,
-.edit:hover
+.actions span:hover
 {
     text-decoration: underline;
     cursor: pointer;
+}
+
+table .edit-row input,
+table .edit-row textarea
+{
+    width: 100%;
+    font-size: inherit;
+    font-family: inherit;
+    padding: 0.5em;
+
+    border: rgba(0, 0, 0, .15) solid 1px;
+}
+
+table .edit-row textarea
+{
+    height: 3em;
+    resize: none;
+}
+
+table .edit-row input:focus,
+table .edit-row textarea:focus
+{
+    outline: rgba(0, 0, 0, .50) solid 1px;
 }

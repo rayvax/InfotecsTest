@@ -1,35 +1,62 @@
-import {column, div, input, row, span, textArea} from "./templates";
+import {column, div, input, row, textArea} from "../utils/utils";
 
+/**
+ * Creates html tr for the user
+ * @param {User} user
+ * @returns {string}
+ */
 export function makeUserRow(user)
 {
-    const rowData = {
-        firstName: user.name.firstName,
-        lastName: user.name.lastName,
-        about: user.about,
-        eyeColor: user.eyeColor
-    }
-
     let columns = [];
-    for (const key in rowData)
+    for (const key in user)
     {
-        const d = div(rowData[key], "second-line-overflow")
+        const d = div(user[key], "second-line-overflow")
         columns.push(column(d, key))
     }
-    columns.push(column("Edit", "edit"))
 
     return row(columns.join(""));
 }
 
-export function makeUserInputRowElement()
+
+const textInput = (name) => input("text", name)
+const inputWrappers = {textInput, textArea}
+
+/* Wrapper for proper abstraction for the makeInputRow method */
+export class Input
 {
-    const inputs = [input("text", "firstName"),
-                    input("text", "lastName"),
-                    textArea("about"),
-                    input("text", "eyeColor")]
-    const columns = Array.from(inputs, input => column(input));
-
-    const result = document.createElement("tr");
-    result.insertAdjacentHTML("beforeend", columns.join(""))
-
-    return result;
+    /** Should match inputWrappers keys
+     * @typedef {"textInput" | "textArea"} InputTypes
+     */
+    
+    /**
+     * @param {InputTypes} type
+     * @param {string} name
+     */
+    constructor(type, name)
+    {
+        this.type = type;
+        this.name = name;
+    }
 }
+
+/**
+ * @param {Input[]} inputs input fields in each column
+ * @param {string} className
+ * @returns string
+ */
+export function makeInputRow(inputs, className = "")
+{
+    const columns = inputs.map(input =>
+    {
+        const toHtml = inputWrappers[input.type]
+
+        if(toHtml)
+        {
+            const inputHtml = toHtml(input.name);
+            return column(inputHtml)
+        }
+    })
+
+    return row(columns.join(""), className)
+}
+

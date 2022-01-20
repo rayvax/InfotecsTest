@@ -382,7 +382,7 @@ const data = [
     {
         "id": "5c2286fb1802a0ecd0aa6873",
         "name": {
-            "firstName": "Mccullough",
+            "firstName": "Mcculloug",
             "lastName": "Sullivan"
         },
         "phone": "+7 (953) 553-3215",
